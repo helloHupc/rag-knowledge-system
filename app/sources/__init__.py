@@ -1,0 +1,1 @@
+"""Knowledge source connector abstractions."""
