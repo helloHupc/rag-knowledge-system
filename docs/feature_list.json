@@ -1,6 +1,6 @@
 {
   "project": "oa-rag",
-  "last_updated": "2026-05-28",
+  "last_updated": "2026-06-06",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -32,7 +32,9 @@
         "返回 document_id 和 status=completed",
         "GET /api/v1/documents/{id} 可查看详情"
       ],
-      "evidence": ["pytest tests/test_upload.py 通过"],
+      "evidence": [
+        "pytest tests/test_upload.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -48,7 +50,9 @@
         "GET /api/v1/documents/{id}/chunks 可查看切分结果",
         "切分结果包含 parent-child 关系"
       ],
-      "evidence": ["pytest tests/test_chunking_strategies.py 通过"],
+      "evidence": [
+        "pytest tests/test_chunking_strategies.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -63,7 +67,9 @@
         "文档处理完成后 chunks 有 embedding",
         "向量存储中有对应记录"
       ],
-      "evidence": ["pytest tests/test_provider_ready_vector_flow.py 通过"],
+      "evidence": [
+        "pytest tests/test_provider_ready_vector_flow.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -79,7 +85,9 @@
         "返回结果包含 score 和 citation",
         "支持 dense/hybrid 两种模式"
       ],
-      "evidence": ["pytest tests/test_retrieval_qa.py 通过"],
+      "evidence": [
+        "pytest tests/test_retrieval_qa.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -95,7 +103,9 @@
         "返回 answer 和 citations",
         "引用指向实际文档 chunk"
       ],
-      "evidence": ["pytest tests/test_retrieval_qa.py 通过"],
+      "evidence": [
+        "pytest tests/test_retrieval_qa.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -111,7 +121,9 @@
         "POST /api/v1/dify/retrieval 兼容 Dify External Knowledge API",
         "Bearer token 验证正确"
       ],
-      "evidence": ["pytest tests/test_dify_api.py 通过"],
+      "evidence": [
+        "pytest tests/test_dify_api.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -127,7 +139,9 @@
         "GET /api/v1/admin/departments 返回部门列表",
         "GET /api/v1/admin/config 返回系统配置"
       ],
-      "evidence": ["pytest tests/test_admin_apis.py 通过"],
+      "evidence": [
+        "pytest tests/test_admin_apis.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -142,7 +156,9 @@
         "GET /api/v1/configs 返回 metadata.field_options",
         "PUT /api/v1/configs 可更新字段选项"
       ],
-      "evidence": ["pytest tests/test_management_apis.py 通过"],
+      "evidence": [
+        "pytest tests/test_management_apis.py 通过"
+      ],
       "notes": ""
     },
     {
@@ -181,7 +197,9 @@
         "POST /api/v1/chunking/preview 支持所有策略",
         "各策略有独立测试用例"
       ],
-      "evidence": ["pytest tests/test_chunking_strategies.py 通过，覆盖全部 6 种策略"],
+      "evidence": [
+        "pytest tests/test_chunking_strategies.py 通过，覆盖全部 6 种策略"
+      ],
       "notes": ""
     },
     {
@@ -196,7 +214,9 @@
         "前端切分页面可选择策略",
         "支持手动文本和已上传文档预览"
       ],
-      "evidence": ["前端页面存在"],
+      "evidence": [
+        "前端页面存在"
+      ],
       "notes": ""
     },
     {
@@ -211,7 +231,10 @@
         "前端字段配置页面显示'知识库'而非'资源模块'",
         "检索 API 支持 filters.source_module 筛选"
       ],
-      "evidence": ["前端 fieldOptions.ts 已更新", "检索 API 支持 source_module 过滤"],
+      "evidence": [
+        "前端 fieldOptions.ts 已更新",
+        "检索 API 支持 source_module 过滤"
+      ],
       "notes": ""
     },
     {
@@ -228,7 +251,9 @@
         "检索服务使用 PermissionChecker 接口",
         "144 passed, 0 failed"
       ],
-      "evidence": ["pytest 全量通过（144 passed）"],
+      "evidence": [
+        "pytest 全量通过（144 passed）"
+      ],
       "notes": "已删除旧权限系统"
     },
     {
@@ -307,6 +332,29 @@
         "mimo-v2.5 多模态描述功能已集成"
       ],
       "notes": "支持 OCR 和多模态两种识别方式，根据配置自动选择模式（OCR/多模态/混合）"
+    },
+    {
+      "id": "M2.0-002",
+      "milestone": "2.0",
+      "priority": 17,
+      "area": "integration",
+      "title": "飞书 / 企业微信 IM 机器人对接",
+      "user_visible_behavior": "用户可在飞书或企业微信中私聊机器人或在群聊 @ 机器人提问，机器人调用知识库并异步返回答案",
+      "status": "in_progress",
+      "verification": [
+        "POST /api/v1/feishu/events 支持 URL verification challenge",
+        "POST /api/v1/feishu/events 支持文本消息解析、验签、去重、异步回复任务提交",
+        "GET /api/v1/wecom/callback 支持企业微信 URL 验证并返回明文 echostr",
+        "POST /api/v1/wecom/callback 支持加密 XML 文本消息解析、验签、去重、异步回复任务提交",
+        "BotDispatchService 支持 qa/search 两种回答模式并附带来源",
+        "配置项和文档已更新"
+      ],
+      "evidence": [
+        "pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过（18 passed）",
+        "python3 -m compileall app tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过",
+        "pytest tests/ -x -q 当前失败于既有 test_retrieval_qa.py::test_qa_answer_returns_insufficient_evidence_for_high_threshold（与本功能无直接关系，单测复现同样失败）"
+      ],
+      "notes": "当前在 feat/im-bot-integration 分支实现，待用户验收后再 merge；未做真实飞书/企微公网联调。"
     }
   ]
 }
