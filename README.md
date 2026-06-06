@@ -28,6 +28,7 @@
 
 ### 🔌 第三方对接
 - **Dify 集成**：一键生成 Dify 外部知识库 API 地址，支持多知识库组合
+- **IM 机器人**：支持飞书、企业微信自建应用机器人回调，用户可在 IM 内直接提问
 - **通用查询接口**：HTTP POST 接口，任意平台可调用
 - **search / qa 双模式**：纯检索或检索+LLM 问答
 
@@ -181,6 +182,15 @@ curl -X POST http://localhost:18080/api/v1/knowledge/query \
   - 多知识库组合：`oa,kf`（逗号分隔多个 source_module）
 
 > ⚠️ Dify 容器内访问宿主机必须用 `host.docker.internal`，不能用 `127.0.0.1`
+
+### 飞书 / 企业微信机器人配置
+
+- 飞书事件订阅回调：`https://<域名>/api/v1/feishu/events`
+- 企业微信 API 接收回调：`https://<域名>/api/v1/wecom/callback`
+- 回调收到文本消息后会立即向平台返回成功响应，并在后台调用知识库问答，再通过平台发消息 API 主动回复。
+- 私聊直接响应；飞书群聊仅在消息包含 `mentions`（即 @ 机器人）时响应。
+- 飞书接入说明见 [`docs/guides/feishu-bot-integration.md`](docs/guides/feishu-bot-integration.md)。
+- 企业微信接入说明见 [`docs/guides/wecom-bot-integration.md`](docs/guides/wecom-bot-integration.md)。
 
 ## 📖 配置参考
 

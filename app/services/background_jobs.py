@@ -23,6 +23,11 @@ class BackgroundJobRunner:
         executor.submit(cls._run_ingest_job, doc_uuid, job_uuid, settings)
 
     @classmethod
+    def submit(cls, fn, *args, **kwargs) -> None:
+        executor = cls._get_executor()
+        executor.submit(fn, *args, **kwargs)
+
+    @classmethod
     def shutdown(cls) -> None:
         with cls._lock:
             if cls._executor is not None:

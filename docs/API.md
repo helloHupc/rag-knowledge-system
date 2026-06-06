@@ -74,6 +74,14 @@
 | POST | `/api/v1/dify/knowledge` | Dify 外部知识库接口（HTTP 节点） |
 | POST | `/api/v1/dify/retrieval` | Dify External Knowledge API |
 
+### IM 机器人对接
+
+| 方法 | 路由 | 说明 |
+|------|------|------|
+| POST | `/api/v1/feishu/events` | 飞书事件订阅回调（URL 验证、接收文本消息、异步回复） |
+| GET | `/api/v1/wecom/callback` | 企业微信 API 接收 URL 验证 |
+| POST | `/api/v1/wecom/callback` | 企业微信接收消息回调（接收文本消息、异步回复） |
+
 ### 数据源
 
 | 方法 | 路由 | 说明 |
@@ -101,6 +109,53 @@
 `POST /api/v1/knowledge/query`
 
 详见 [`docs/contracts/knowledge-api.md`](contracts/knowledge-api.md)
+
+---
+
+## IM 机器人接口说明
+
+用户接入说明：
+
+- 飞书：[`docs/guides/feishu-bot-integration.md`](guides/feishu-bot-integration.md)
+- 企业微信：[`docs/guides/wecom-bot-integration.md`](guides/wecom-bot-integration.md)
+
+### 飞书
+
+- 回调地址：`https://<域名>/api/v1/feishu/events`
+- 支持 `url_verification` challenge 透传。
+- 支持 `im.message.receive_v1` 文本消息事件。
+- 私聊直接响应；群聊仅在消息包含 `mentions` 时响应。
+- 后台异步调用知识库问答后，通过飞书 `messages/{message_id}/reply` 主动回复。
+
+### 企业微信
+
+- 回调地址：`https://<域名>/api/v1/wecom/callback`
+- `GET` 用于 API 接收 URL 验证，返回解密后的明文 `echostr`。
+- `POST` 接收加密 XML 文本消息，立即返回空串避免平台重试。
+- 后台异步调用知识库问答后，通过企业微信应用消息主动推送。
+
+### 相关配置
+
+```bash
+BOT_RESPONSE_MODE=qa            # qa | search
+BOT_TOP_K=8
+BOT_DEDUP_TTL_SECONDS=300
+
+FEISHU_ENABLED=false
+FEISHU_APP_ID=
+FEISHU_APP_SECRET=
+FEISHU_VERIFICATION_TOKEN=
+FEISHU_ENCRYPT_KEY=
+FEISHU_BASE_URL=https://open.feishu.cn
+
+WECOM_ENABLED=false
+WECOM_CORP_ID=
+WECOM_AGENT_ID=
+WECOM_SECRET=
+WECOM_CALLBACK_TOKEN=
+WECOM_ENCODING_AES_KEY=
+WECOM_BASE_URL=https://qyapi.weixin.qq.com
+```
 
 ---
 

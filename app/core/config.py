@@ -122,6 +122,23 @@ class Settings(BaseSettings):
     dify_app_key: str | None = None
     dify_retrieval_user_id: str = "dify-external"
 
+    bot_response_mode: str = "qa"
+    bot_top_k: int = 8
+    bot_dedup_ttl_seconds: int = 300
+    feishu_enabled: bool = False
+    feishu_app_id: str | None = None
+    feishu_app_secret: str | None = None
+    feishu_verification_token: str | None = None
+    feishu_encrypt_key: str | None = None
+    feishu_base_url: str = "https://open.feishu.cn"
+    wecom_enabled: bool = False
+    wecom_corp_id: str | None = None
+    wecom_agent_id: str | None = None
+    wecom_secret: str | None = None
+    wecom_callback_token: str | None = None
+    wecom_encoding_aes_key: str | None = None
+    wecom_base_url: str = "https://qyapi.weixin.qq.com"
+
     rerank_enabled: bool = False
     rerank_api_base: str | None = Field(
         default=None,
@@ -240,6 +257,30 @@ class Settings(BaseSettings):
             self.dify_retrieval_user_id,
             default="dify-external",
         ) or "dify-external"
+        self.bot_response_mode = self._normalize_text(self.bot_response_mode, default="qa") or "qa"
+        if self.bot_response_mode not in {"qa", "search"}:
+            raise ValueError("BOT_RESPONSE_MODE must be either 'qa' or 'search'.")
+        if self.bot_top_k <= 0:
+            raise ValueError("BOT_TOP_K must be greater than 0.")
+        if self.bot_dedup_ttl_seconds <= 0:
+            raise ValueError("BOT_DEDUP_TTL_SECONDS must be greater than 0.")
+        self.feishu_app_id = self._normalize_text(self.feishu_app_id)
+        self.feishu_app_secret = self._normalize_text(self.feishu_app_secret)
+        self.feishu_verification_token = self._normalize_text(self.feishu_verification_token)
+        self.feishu_encrypt_key = self._normalize_text(self.feishu_encrypt_key)
+        self.feishu_base_url = self._normalize_text(self.feishu_base_url, default="https://open.feishu.cn") or "https://open.feishu.cn"
+        self.wecom_corp_id = self._normalize_text(self.wecom_corp_id)
+        self.wecom_agent_id = self._normalize_text(self.wecom_agent_id)
+        self.wecom_secret = self._normalize_text(self.wecom_secret)
+        self.wecom_callback_token = self._normalize_text(self.wecom_callback_token)
+        self.wecom_encoding_aes_key = self._normalize_text(self.wecom_encoding_aes_key)
+        self.wecom_base_url = self._normalize_text(self.wecom_base_url, default="https://qyapi.weixin.qq.com") or "https://qyapi.weixin.qq.com"
+        if self.feishu_enabled and not (self.feishu_app_id and self.feishu_app_secret and self.feishu_verification_token):
+            raise ValueError("FEISHU_APP_ID, FEISHU_APP_SECRET and FEISHU_VERIFICATION_TOKEN are required when FEISHU_ENABLED=true.")
+        if self.wecom_enabled and not (
+            self.wecom_corp_id and self.wecom_agent_id and self.wecom_secret and self.wecom_callback_token and self.wecom_encoding_aes_key
+        ):
+            raise ValueError("WECOM_CORP_ID, WECOM_AGENT_ID, WECOM_SECRET, WECOM_CALLBACK_TOKEN and WECOM_ENCODING_AES_KEY are required when WECOM_ENABLED=true.")
 
         # 图片识别配置验证
         self.image_recognition_provider = self._normalize_text(
