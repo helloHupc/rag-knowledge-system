@@ -35,14 +35,6 @@ async def feishu_events(
 ):
     body = await request.body()
     client = FeishuClient(settings)
-    if not client.verify_signature(
-        timestamp=x_lark_request_timestamp,
-        nonce=x_lark_request_nonce,
-        signature=x_lark_signature,
-        body=body,
-    ):
-        raise AppError(code=ErrorCode.BOT_SIGNATURE_INVALID, message="invalid feishu signature", status_code=401)
-
     payload = json.loads(body.decode("utf-8") or "{}")
     if "encrypt" in payload:
         payload = client.decrypt_event(payload["encrypt"])
@@ -51,6 +43,14 @@ async def feishu_events(
         if settings.feishu_verification_token and payload.get("token") != settings.feishu_verification_token:
             raise AppError(code=ErrorCode.BOT_SIGNATURE_INVALID, message="invalid feishu verification token", status_code=401)
         return JSONResponse(content={"challenge": payload.get("challenge", "")})
+
+    if not client.verify_signature(
+        timestamp=x_lark_request_timestamp,
+        nonce=x_lark_request_nonce,
+        signature=x_lark_signature,
+        body=body,
+    ):
+        raise AppError(code=ErrorCode.BOT_SIGNATURE_INVALID, message="invalid feishu signature", status_code=401)
 
     header = payload.get("header") or {}
     if settings.feishu_verification_token and header.get("token") != settings.feishu_verification_token:

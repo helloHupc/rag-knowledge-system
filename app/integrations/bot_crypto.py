@@ -96,7 +96,31 @@ def encrypt_wecom_payload(*, message_xml: str, receive_id: str, encoding_aes_key
 
 def decrypt_feishu_payload(*, encrypted: str, encrypt_key: str) -> str:
     key = hashlib.sha256(encrypt_key.encode("utf-8")).digest()
-    return aes_cbc_decrypt_base64(ciphertext=encrypted, key=key).decode("utf-8")
+    payload = base64.b64decode(encrypted)
+    if len(payload) < 16:
+        raise ValueError("invalid feishu encrypted payload")
+    iv = payload[:16]
+    ciphertext = payload[16:]
+    decryptor = Cipher(
+        algorithms.AES(key),
+        modes.CBC(iv),
+        backend=default_backend(),
+    ).decryptor()
+    return pkcs7_unpad(decryptor.update(ciphertext) + decryptor.finalize(), block_size=16).decode("utf-8")
+
+
+def encrypt_feishu_payload(*, plaintext: bytes, encrypt_key: str, iv: bytes | None = None) -> str:
+    key = hashlib.sha256(encrypt_key.encode("utf-8")).digest()
+    iv_bytes = iv or b"0" * 16
+    if len(iv_bytes) != 16:
+        raise ValueError("iv must be 16 bytes")
+    encryptor = Cipher(
+        algorithms.AES(key),
+        modes.CBC(iv_bytes),
+        backend=default_backend(),
+    ).encryptor()
+    payload = encryptor.update(pkcs7_pad(plaintext, block_size=16)) + encryptor.finalize()
+    return base64.b64encode(iv_bytes + payload).decode("utf-8")
 
 
 @dataclass

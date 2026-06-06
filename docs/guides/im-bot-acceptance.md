@@ -9,7 +9,7 @@ git status
 git branch --show-current
 ```
 
-预期当前分支为：
+预期当前分支为:
 
 ```text
 feat/im-bot-integration
@@ -21,7 +21,7 @@ feat/im-bot-integration
 pip install -r requirements.txt
 ```
 
-本功能新增依赖：
+本功能新增依赖:
 
 ```text
 cryptography>=43,<46
@@ -35,7 +35,7 @@ cryptography>=43,<46
 pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q
 ```
 
-预期：
+预期:
 
 ```text
 18 passed
@@ -47,7 +47,7 @@ pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py 
 python3 -m compileall app tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q
 ```
 
-预期：无输出且退出码为 0。
+预期:无输出且退出码为 0。
 
 ### 3.3 前端构建检查
 
@@ -57,7 +57,7 @@ npm run build
 cd ..
 ```
 
-预期输出包含：
+预期输出包含:
 
 ```text
 ✓ built
@@ -65,13 +65,13 @@ cd ..
 
 ### 3.4 全量测试说明
 
-可执行：
+可执行:
 
 ```bash
 pytest tests/ -x -q
 ```
 
-当前已知全量测试可能失败在既有 QA 用例：
+当前已知全量测试可能失败在既有 QA 用例:
 
 ```text
 tests/test_retrieval_qa.py::test_qa_answer_returns_insufficient_evidence_for_high_threshold
@@ -83,7 +83,7 @@ actual: grounded
 
 ## 4. 配置检查
 
-`.env.example` 应包含：
+`.env.example` 应包含:
 
 ```bash
 BOT_RESPONSE_MODE=qa
@@ -112,13 +112,13 @@ WECOM_BASE_URL=https://qyapi.weixin.qq.com
 uvicorn app.main:app --reload --host 0.0.0.0 --port 18080
 ```
 
-访问：
+访问:
 
 ```text
 http://127.0.0.1:18080/docs
 ```
 
-应能看到：
+应能看到:
 
 ```text
 POST /api/v1/feishu/events
@@ -130,13 +130,13 @@ POST /api/v1/wecom/callback
 
 ### 6.1 飞书 URL verification
 
-`.env` 示例：
+`.env` 示例:
 
 ```bash
 FEISHU_VERIFICATION_TOKEN=test-token
 ```
 
-请求：
+请求:
 
 ```bash
 curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
@@ -148,7 +148,7 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
   }'
 ```
 
-预期返回：
+预期返回:
 
 ```json
 {"challenge":"hello-challenge"}
@@ -172,29 +172,29 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
         "chat_id": "oc_local_001",
         "chat_type": "p2p",
         "message_type": "text",
-        "content": "{\"text\":\"调岗审批流程是什么？\"}"
+        "content": "{\"text\":\"调岗审批流程是什么?\"}"
       }
     }
   }'
 ```
 
-预期返回：
+预期返回:
 
 ```json
 {"code":0}
 ```
 
-如果未配置真实飞书 `APP_ID` / `APP_SECRET`，后台主动推送失败是正常的；该步骤主要验证回调接收与解析。
+如果未配置真实飞书 `APP_ID` / `APP_SECRET`,后台主动推送失败是正常的;该步骤主要验证回调接收与解析。
 
 ## 7. 飞书真机验收
 
-1. 准备公网 HTTPS 地址，例如：
+1. 准备公网 HTTPS 地址,例如:
 
    ```bash
    ngrok http 18080
    ```
 
-2. 飞书事件订阅回调地址填写：
+2. 飞书事件订阅回调地址填写:
 
    ```text
    https://<公网域名>/api/v1/feishu/events
@@ -204,10 +204,11 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
    - 创建企业自建应用。
    - 获取 `App ID`、`App Secret`。
    - 配置事件订阅 `Verification Token`、`Encrypt Key`。
-   - 订阅事件 `im.message.receive_v1`。
+   - 在事件订阅页面添加事件 `im.message.receive_v1`（接收消息 v2.0）。仅通过 URL Challenge 不会推送消息。
    - 开通权限 `im:message`、`im:message:send_as_bot`。
+   - 创建并发布新版本；事件或权限变更后必须重新发布。
 
-4. `.env` 配置：
+4. `.env` 配置:
 
    ```bash
    FEISHU_ENABLED=true
@@ -220,42 +221,42 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
    BOT_TOP_K=8
    ```
 
-5. 重启后端，在飞书后台保存 / 验证 URL。
+5. 重启后端，在飞书后台保存 / 验证 URL。开启 Encrypt Key 时，飞书 Challenge 请求体为 `{"encrypt":"..."}`，后端会先解密再返回 `challenge`。
 
-6. 私聊机器人发送：
-
-   ```text
-   调岗审批流程是什么？
-   ```
-
-   预期：机器人异步回复答案，并带来源。
-
-7. 群聊中发送：
+6. 私聊机器人发送:
 
    ```text
-   @机器人 调岗审批流程是什么？
+   调岗审批流程是什么?
    ```
 
-   预期：机器人回复；不 @ 机器人时不回复。
+   预期:机器人异步回复答案,并带来源。
+
+7. 群聊中发送:
+
+   ```text
+   @机器人 调岗审批流程是什么?
+   ```
+
+   预期:机器人回复;不 @ 机器人时不回复。
 
 ## 8. 企业微信真机验收
 
-1. 企业微信管理后台创建自建应用，获取：
+1. 企业微信管理后台创建自建应用,获取:
    - `CorpID`
    - `AgentId`
    - `Secret`
 
-2. 应用 API 接收回调地址填写：
+2. 应用 API 接收回调地址填写:
 
    ```text
    https://<公网域名>/api/v1/wecom/callback
    ```
 
-3. 生成：
+3. 生成:
    - `Token`
    - `EncodingAESKey`
 
-4. `.env` 配置：
+4. `.env` 配置:
 
    ```bash
    WECOM_ENABLED=true
@@ -269,15 +270,15 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
    BOT_TOP_K=8
    ```
 
-5. 重启后端，在企业微信后台保存 API 接收配置。
+5. 重启后端,在企业微信后台保存 API 接收配置。
 
-6. 给自建应用发送：
+6. 给自建应用发送:
 
    ```text
-   调岗审批流程是什么？
+   调岗审批流程是什么?
    ```
 
-   预期：应用异步推送答案，并带来源。
+   预期:应用异步推送答案,并带来源。
 
 ## 9. 验收通过标准
 
@@ -298,8 +299,8 @@ curl -X POST http://127.0.0.1:18080/api/v1/feishu/events \
 [ ] main 分支尚未 merge
 ```
 
-验收通过后回复：
+验收通过后回复:
 
 ```text
-验收通过，可以 merge
+验收通过,可以 merge
 ```

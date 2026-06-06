@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from app.integrations.bot_crypto import feishu_signature
+from app.integrations.bot_crypto import encrypt_feishu_payload, feishu_signature
 
 
 def _event_payload(event_id: str = "evt-1") -> dict:
@@ -27,6 +27,7 @@ def _event_payload(event_id: str = "evt-1") -> dict:
 
 def test_feishu_url_verification_returns_platform_contract(client, monkeypatch):
     monkeypatch.setenv("FEISHU_VERIFICATION_TOKEN", "verify-token")
+    monkeypatch.setenv("FEISHU_ENCRYPT_KEY", "")
     from app.core.config import reset_settings_cache
 
     reset_settings_cache()
@@ -39,8 +40,28 @@ def test_feishu_url_verification_returns_platform_contract(client, monkeypatch):
     assert response.json() == {"challenge": "abc"}
 
 
+def test_feishu_encrypted_url_verification_returns_platform_contract(client, monkeypatch):
+    monkeypatch.setenv("FEISHU_VERIFICATION_TOKEN", "verify-token")
+    monkeypatch.setenv("FEISHU_ENCRYPT_KEY", "encrypt-key")
+    from app.core.config import reset_settings_cache
+
+    reset_settings_cache()
+    encrypted = encrypt_feishu_payload(
+        plaintext=json.dumps(
+            {"type": "url_verification", "token": "verify-token", "challenge": "abc"}
+        ).encode("utf-8"),
+        encrypt_key="encrypt-key",
+        iv=b"1234567890abcdef",
+    )
+    response = client.post("/api/v1/feishu/events", json={"encrypt": encrypted})
+
+    assert response.status_code == 200
+    assert response.json() == {"challenge": "abc"}
+
+
 def test_feishu_rejects_invalid_verification_token(client, monkeypatch):
     monkeypatch.setenv("FEISHU_VERIFICATION_TOKEN", "verify-token")
+    monkeypatch.setenv("FEISHU_ENCRYPT_KEY", "")
     from app.core.config import reset_settings_cache
 
     reset_settings_cache()
@@ -55,6 +76,7 @@ def test_feishu_rejects_invalid_verification_token(client, monkeypatch):
 
 def test_feishu_event_submits_background_reply(client, monkeypatch):
     monkeypatch.setenv("FEISHU_VERIFICATION_TOKEN", "verify-token")
+    monkeypatch.setenv("FEISHU_ENCRYPT_KEY", "")
     from app.core.config import reset_settings_cache
     from app.services import background_jobs
 
@@ -78,6 +100,7 @@ def test_feishu_event_submits_background_reply(client, monkeypatch):
 
 def test_feishu_event_deduplicates_event_id(client, monkeypatch):
     monkeypatch.setenv("FEISHU_VERIFICATION_TOKEN", "verify-token")
+    monkeypatch.setenv("FEISHU_ENCRYPT_KEY", "")
     from app.core.config import reset_settings_cache
     from app.services import background_jobs
 
