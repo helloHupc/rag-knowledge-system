@@ -114,7 +114,10 @@
 
 ## IM 机器人接口说明
 
-详见 [`docs/guides/im-bot-integration.md`](guides/im-bot-integration.md)，验收步骤见 [`docs/guides/im-bot-acceptance.md`](guides/im-bot-acceptance.md)。
+用户接入说明：
+
+- 飞书：[`docs/guides/feishu-bot-integration.md`](guides/feishu-bot-integration.md)
+- 企业微信：[`docs/guides/wecom-bot-integration.md`](guides/wecom-bot-integration.md)
 
 ### 飞书
 

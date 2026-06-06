@@ -350,12 +350,12 @@
         "配置项和文档已更新"
       ],
       "evidence": [
-        "pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过（19 passed）",
+        "pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过（20 passed）",
         "pytest tests/test_feishu_bot.py tests/test_bot_crypto.py -q 通过（9 passed）",
         "python3 -m compileall app tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过",
         "飞书公网 HTTPS 真实验收通过：Challenge 验证成功；私聊机器人消息触发 POST /api/v1/feishu/events 200；embedding、DeepSeek QA、飞书 tenant_access_token、messages/{message_id}/reply 均返回 200；机器人已异步回复并带来源",
         "pytest tests/ -x -q 当前失败于既有 test_retrieval_qa.py::test_qa_answer_returns_insufficient_evidence_for_high_threshold（与本功能无直接关系，单测复现同样失败）",
-        "验收步骤和排障说明已记录在 docs/guides/im-bot-acceptance.md"
+        "飞书接入说明已记录在 docs/guides/feishu-bot-integration.md；企业微信接入说明已记录在 docs/guides/wecom-bot-integration.md；开发过程文档已归档到 docs/archive/"
       ],
       "notes": "飞书真实联调已通过；企业微信仍保留模拟测试覆盖，未做真实平台联调。"
     }

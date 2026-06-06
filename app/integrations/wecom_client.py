@@ -8,6 +8,12 @@ from app.integrations.bot_crypto import decrypt_wecom_payload, sha1_sorted_signa
 from app.schemas.bot import BotReplyTarget
 
 
+def _ensure_wecom_success(payload: dict, *, action: str) -> None:
+    errcode = payload.get("errcode", 0)
+    if errcode not in (0, "0", None):
+        raise AppError(code=ErrorCode.BOT_CONFIG_MISSING, message=f"wecom {action} failed: {payload}", status_code=502)
+
+
 class WecomClient:
     _token: str | None = None
     _token_expires_at: float = 0
@@ -38,6 +44,7 @@ class WecomClient:
         )
         response.raise_for_status()
         payload = response.json()
+        _ensure_wecom_success(payload, action="gettoken")
         token = payload.get("access_token")
         if not token:
             raise AppError(code=ErrorCode.BOT_CONFIG_MISSING, message=f"failed to get wecom token: {payload}", status_code=502)
@@ -59,4 +66,6 @@ class WecomClient:
             timeout=self.settings.provider_timeout_seconds,
         )
         response.raise_for_status()
-        return response.json()
+        payload = response.json()
+        _ensure_wecom_success(payload, action="message/send")
+        return payload

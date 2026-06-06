@@ -189,7 +189,8 @@ curl -X POST http://localhost:18080/api/v1/knowledge/query \
 - 企业微信 API 接收回调：`https://<域名>/api/v1/wecom/callback`
 - 回调收到文本消息后会立即向平台返回成功响应，并在后台调用知识库问答，再通过平台发消息 API 主动回复。
 - 私聊直接响应；飞书群聊仅在消息包含 `mentions`（即 @ 机器人）时响应。
-- 详细接入步骤和配置项见 [`docs/guides/im-bot-integration.md`](docs/guides/im-bot-integration.md)，验收步骤见 [`docs/guides/im-bot-acceptance.md`](docs/guides/im-bot-acceptance.md)。
+- 飞书接入说明见 [`docs/guides/feishu-bot-integration.md`](docs/guides/feishu-bot-integration.md)。
+- 企业微信接入说明见 [`docs/guides/wecom-bot-integration.md`](docs/guides/wecom-bot-integration.md)。
 
 ## 📖 配置参考
 

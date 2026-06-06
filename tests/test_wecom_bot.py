@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
+from app.core.errors import AppError
 from app.integrations.bot_crypto import encrypt_wecom_payload, sha1_sorted_signature
+from app.integrations.wecom_client import WecomClient
 
 ENCODING_KEY = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG"
 TOKEN = "wecom-token"
@@ -104,6 +108,27 @@ def test_wecom_callback_submits_background_reply(client, monkeypatch):
     assert platform == "wecom"
     assert query == "调岗审批流程是什么？"
     assert target.user_id == "user-1"
+
+
+def test_wecom_client_rejects_send_api_errcode(monkeypatch):
+    _set_wecom_env(monkeypatch)
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    WecomClient._token = "token"
+    WecomClient._token_expires_at = 9999999999
+
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"errcode": 60020, "errmsg": "not allow to access from your ip"}
+
+    monkeypatch.setattr("app.integrations.wecom_client.httpx.post", lambda *args, **kwargs: FakeResponse())
+
+    with pytest.raises(AppError, match="wecom message/send failed"):
+        WecomClient(settings).send(type("Target", (), {"user_id": "user-1"})(), "hello")
 
 
 def test_wecom_callback_deduplicates_msg_id(client, monkeypatch):
