@@ -114,7 +114,7 @@
 
 ## IM 机器人接口说明
 
-详见 [`docs/guides/im-bot-integration.md`](guides/im-bot-integration.md)。
+详见 [`docs/guides/im-bot-integration.md`](guides/im-bot-integration.md)，验收步骤见 [`docs/guides/im-bot-acceptance.md`](guides/im-bot-acceptance.md)。
 
 ### 飞书
 

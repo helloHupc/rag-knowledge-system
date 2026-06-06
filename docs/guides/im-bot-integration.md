@@ -2,7 +2,8 @@
 
 > 对应 GitHub Issue #1：「对话接口希望可以加上钉钉 飞书 这些机器人 api」。
 > 本期范围：**飞书**、**企业微信**。钉钉预留扩展位，本期不实现。
-> 状态：**待评审**。确认后再进入编码实现。
+> 状态：**已在 `feat/im-bot-integration` 分支实现，待用户验收后合并**。
+> 验收步骤见 [`docs/guides/im-bot-acceptance.md`](im-bot-acceptance.md)。
 
 ---
 

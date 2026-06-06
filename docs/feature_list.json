@@ -352,9 +352,10 @@
       "evidence": [
         "pytest tests/test_config.py tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过（18 passed）",
         "python3 -m compileall app tests/test_bot_crypto.py tests/test_bot_dispatch.py tests/test_feishu_bot.py tests/test_wecom_bot.py -q 通过",
-        "pytest tests/ -x -q 当前失败于既有 test_retrieval_qa.py::test_qa_answer_returns_insufficient_evidence_for_high_threshold（与本功能无直接关系，单测复现同样失败）"
+        "pytest tests/ -x -q 当前失败于既有 test_retrieval_qa.py::test_qa_answer_returns_insufficient_evidence_for_high_threshold（与本功能无直接关系，单测复现同样失败）",
+        "验收步骤已记录在 docs/guides/im-bot-acceptance.md"
       ],
-      "notes": "当前在 feat/im-bot-integration 分支实现，待用户验收后再 merge；未做真实飞书/企微公网联调。"
+      "notes": "当前在 feat/im-bot-integration 分支实现，待用户验收后再 merge；未做真实飞书/企微公网联调；验收步骤见 docs/guides/im-bot-acceptance.md。"
     }
   ]
 }
